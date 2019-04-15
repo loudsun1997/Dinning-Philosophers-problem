@@ -1,7 +1,9 @@
+import java.util.Random;
+
 public class Philosophers extends Thread
 {
     private float task;
-    private PhilosopherStatus;
+    private PhilosopherStatus PStatus;
     private boolean leftForkInPlace;
     private boolean rightForkInPlace;
     private Fork leftFork;
@@ -10,27 +12,57 @@ public class Philosophers extends Thread
     private long eatingTime;
     private long thinkingTime;
 
-    public Philosophers(float assignTask, String name)
+    private Random rnd;
+    private static int randomBound = 1000;
+    private int scheduledThinkingTime;
+    private int scheduledEatingTime;
+
+    private Referee ref;
+
+    public Philosophers(float assignTask, String name, long randomSeed, Referee ref)
     {
         task = assignTask;
         setName(name);
-
+        rnd = new Random(randomSeed);
+        eatingCount = 0;
+        eatingTime = 0;
+        thinkingTime = 0;
+        this.ref = ref;
     }
 
 
     public void run()
     {
-        while (! time to go home)
+        try
         {
-            System.out.println (this.getName() + “THINKING”);
+            while (task>0)
+            {
+                System.out.println (this.getName() + " is " + PStatus.toString());
 // TODO: think for random number of milliseconds <=1 sec
+
+                PStatus = PhilosopherStatus.THINKING;
+                scheduledThinkingTime = rnd.nextInt(randomBound);
+                thinkingTime = thinkingTime + scheduledThinkingTime;
+                Thread.sleep(scheduledThinkingTime);
 // TODO: obtain the fork on the left
-            // TODO: obtain the fork on the right
-            System.out.println (ID + “EATING”);
-            // TODO: eat for random number of milliseconds <= 1sec
-            // TODO: release the fork on the left
-            // TODO: release the fork on the right
+                leftFork = ref.obtainLeftFork();
+                // TODO: obtain the fork on the right
+                rightFork = ref.obtainRightFork();
+                PStatus = PhilosopherStatus.EATING;
+                System.out.println (this.getName() + " is " + PStatus.toString());
+                scheduledEatingTime = rnd.nextInt(randomBound);
+                eatingTime = eatingTime + scheduledThinkingTime;
+                // TODO: eat for random number of milliseconds <= 1sec
+                // TODO: release the fork on the left
+                // TODO: release the fork on the right
+            }
         }
+        catch (InterruptedException e)
+        {
+            System.out.println("Thread " +  threadName + " interrupted.");
+        }
+
+
     }
 
     private boolean isLeftForkInPlace()
