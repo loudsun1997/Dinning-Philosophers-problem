@@ -9,7 +9,7 @@ public class Philosophers extends Thread
     private Fork leftFork;
     private Fork rightFork;
     private int eatingCount;
-    private long eatingTime;
+    private long totalEatingTime;
     private long thinkingTime;
 
     private Random rnd;
@@ -19,77 +19,77 @@ public class Philosophers extends Thread
 
     private Referee ref;
 
-    public Philosophers(float assignTask, String name, long randomSeed, Referee ref)
+    public Philosophers(float assignTask, String name, long randomSeed, Referee ref, Fork leftF, Fork rightF)
     {
         task = assignTask;
         setName(name);
         rnd = new Random(randomSeed);
         eatingCount = 0;
-        eatingTime = 0;
+        totalEatingTime = 0;
         thinkingTime = 0;
         this.ref = ref;
+        leftFork = leftF;
+        rightFork = rightF;
+        PStatus = PhilosopherStatus.THINKING;
     }
 
 
     public void run()
     {
-        try
-        {
+
             while (task>0)
             {
                 System.out.println (this.getName() + " is " + PStatus.toString());
-// TODO: think for random number of milliseconds <=1 sec
 
-                PStatus = PhilosopherStatus.THINKING;
                 scheduledThinkingTime = rnd.nextInt(randomBound);
                 thinkingTime = thinkingTime + scheduledThinkingTime;
-                Thread.sleep(scheduledThinkingTime);
-// TODO: obtain the fork on the left
-                leftFork = ref.obtainLeftFork();
-                // TODO: obtain the fork on the right
-                rightFork = ref.obtainRightFork();
-                PStatus = PhilosopherStatus.EATING;
-                System.out.println (this.getName() + " is " + PStatus.toString());
-                scheduledEatingTime = rnd.nextInt(randomBound);
-                eatingTime = eatingTime + scheduledThinkingTime;
-                // TODO: eat for random number of milliseconds <= 1sec
-                // TODO: release the fork on the left
-                // TODO: release the fork on the right
+                goThink(scheduledThinkingTime);
+
+                if(leftFork.getFStatus() == ForkStatus.IDLE && rightFork.getFStatus() == ForkStatus.IDLE)
+                {
+                    leftFork.setFStatus(ForkStatus.BEING_USED);
+                    rightFork.setFStatus(ForkStatus.BEING_USED);
+                    scheduledEatingTime = rnd.nextInt(randomBound);
+                    totalEatingTime = totalEatingTime + scheduledEatingTime;
+                    goEat(scheduledEatingTime);
+                }
+
             }
+
+
+
+
+    }
+
+
+    private void goThink(int scheduledThinkingTime)
+    {
+        PStatus = PhilosopherStatus.THINKING;
+        print(this.getName() + " is thinking.");
+        try {
+            Thread.sleep(scheduledThinkingTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        catch (InterruptedException e)
-        {
-            System.out.println("Thread " +  threadName + " interrupted.");
+    }
+
+    private void goEat(int scheduledEatingTime)
+    {
+        PStatus = PhilosopherStatus.EATING;
+        print(this.getName() + " is eating.");
+        try {
+            Thread.sleep(scheduledEatingTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
-
     }
 
-    private boolean isLeftForkInPlace()
+
+
+    public static void print(Object O)
     {
-        return leftFork != null;
+        System.out.println(O);
     }
-
-    private boolean isRightForkInPlace()
-    {
-        return rightFork != null;
-    }
-
-    private void resetLeftFork()
-    {
-        leftFork = null;
-    }
-
-    private void resetRightFork()
-    {
-        rightFork = null;
-    }
-
-
-
-
-
-
 
 
 
@@ -139,11 +139,11 @@ public class Philosophers extends Thread
     }
 
     public long getEatingTime() {
-        return eatingTime;
+        return totalEatingTime;
     }
 
     public void setEatingTime(long eatingTime) {
-        this.eatingTime = eatingTime;
+        this.totalEatingTime = eatingTime;
     }
 
     public long getThinkingTime() {

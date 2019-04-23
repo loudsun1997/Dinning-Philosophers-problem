@@ -14,11 +14,7 @@ public class Referee
 
     public void start()
     {
+
     }
 
-    public Fork obtainLeftFork() {
-    }
-
-    public Fork obtainRightFork() {
-    }
 }
