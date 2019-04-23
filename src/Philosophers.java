@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Philosophers extends Thread
 {
-    private float task;
+    private int task;
     private PhilosopherStatus PStatus;
     private boolean leftForkInPlace;
     private boolean rightForkInPlace;
@@ -19,7 +19,7 @@ public class Philosophers extends Thread
 
     private Referee ref;
 
-    public Philosophers(float assignTask, String name, long randomSeed, Referee ref, Fork leftF, Fork rightF)
+    public Philosophers(int assignTask, String name, long randomSeed, Fork leftF, Fork rightF)
     {
         task = assignTask;
         setName(name);
@@ -37,28 +37,28 @@ public class Philosophers extends Thread
     public void run()
     {
 
-            while (task>0)
+        while (task > 0)
+        {
+            System.out.println(this.getName() + " is " + PStatus.toString());
+
+            scheduledThinkingTime = rnd.nextInt(randomBound);
+            thinkingTime = thinkingTime + scheduledThinkingTime;
+            goThink(scheduledThinkingTime);
+
+            if (leftFork.getFStatus() == ForkStatus.IDLE && rightFork.getFStatus() == ForkStatus.IDLE)
             {
-                System.out.println (this.getName() + " is " + PStatus.toString());
-
-                scheduledThinkingTime = rnd.nextInt(randomBound);
-                thinkingTime = thinkingTime + scheduledThinkingTime;
-                goThink(scheduledThinkingTime);
-
-                if(leftFork.getFStatus() == ForkStatus.IDLE && rightFork.getFStatus() == ForkStatus.IDLE)
-                {
-                    leftFork.setFStatus(ForkStatus.BEING_USED);
-                    rightFork.setFStatus(ForkStatus.BEING_USED);
-                    scheduledEatingTime = rnd.nextInt(randomBound);
-                    totalEatingTime = totalEatingTime + scheduledEatingTime;
-                    goEat(scheduledEatingTime);
-                }
-
+                leftFork.setFStatus(ForkStatus.BEING_USED);
+                rightFork.setFStatus(ForkStatus.BEING_USED);
+                scheduledEatingTime = rnd.nextInt(randomBound);
+                totalEatingTime = totalEatingTime + scheduledEatingTime;
+                goEat(scheduledEatingTime);
+                leftFork.setFStatus(ForkStatus.IDLE);
+                rightFork.setFStatus(ForkStatus.IDLE);
+                task--;
             }
+        }
 
-
-
-
+        print("End for " + this.getName());
     }
 
 
@@ -97,14 +97,6 @@ public class Philosophers extends Thread
 
 
 
-
-    public float getTask() {
-        return task;
-    }
-
-    public void setTask(float task) {
-        this.task = task;
-    }
 
     public void setLeftForkInPlace(boolean leftForkInPlace) {
         this.leftForkInPlace = leftForkInPlace;

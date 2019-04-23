@@ -1,10 +1,12 @@
 public class Fork {
 
     private ForkStatus FStatus;
+    private int FNumber;
 
-    public Fork()
+    public Fork(int FNumber)
     {
         FStatus = ForkStatus.IDLE;
+        this.FNumber = FNumber;
     }
 
     public ForkStatus getFStatus() {
