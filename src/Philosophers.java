@@ -54,11 +54,13 @@ public class Philosophers extends Thread
                 goEat(scheduledEatingTime);
                 leftFork.setFStatus(ForkStatus.IDLE);
                 rightFork.setFStatus(ForkStatus.IDLE);
+                eatingCount++;
                 task--;
             }
         }
 
         print("End for " + this.getName());
+        print(this.getName() + "ate for " + totalEatingTime + " and thought for " + thinkingTime + " Total eating count: " + eatingCount);
     }
 
 
